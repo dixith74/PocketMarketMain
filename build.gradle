@@ -1,0 +1,55 @@
+plugins {
+	id 'org.springframework.boot' version '2.1.5.RELEASE'
+	id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'eclipse'
+
+group = 'com.pm.main'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+	developmentOnly
+	runtimeClasspath {
+		extendsFrom developmentOnly
+	}
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', "Greenwich.SR1")
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compile group: 'org.springframework.security', name: 'spring-security-jwt', version: '1.0.10.RELEASE' 
+	//implementation 'com.pm.common:pm-core-lib:0.0.1-SNAPSHOT'
+	//implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	compile files('lib/pm-core-lib-0.0.1-SNAPSHOT.jar')
+	implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'org.postgresql:postgresql'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	//testImplementation 'org.springframework.security:spring-security-test'
+	
+	// Swagger
+    compile('io.springfox:springfox-swagger2:2.6.1')
+    compile 'io.springfox:springfox-swagger-ui:2.6.1'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
