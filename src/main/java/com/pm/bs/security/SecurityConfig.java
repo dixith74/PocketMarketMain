@@ -32,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     	web
 		.ignoring()
 		.antMatchers(HttpMethod.OPTIONS)
-		.antMatchers("/v2/api-docs","/products/**","/upload/**", "/downloadFile/**", "/categories/**",
+		.antMatchers("/v2/api-docs","/upload/**", "/downloadFile/**", "/categories/**",
                     "/configuration/ui",
                     "/swagger-resources/**",
                     "/configuration/security/**",

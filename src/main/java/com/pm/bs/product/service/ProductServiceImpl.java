@@ -1,10 +1,10 @@
 package com.pm.bs.product.service;
 
+import java.io.File;
 import java.nio.channels.IllegalSelectorException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.pm.bs.aws.AmazonClientService;
 import com.pm.bs.beans.Product;
 import com.pm.bs.beans.Product.ProductBuilder;
 import com.pm.bs.order.service.OrderService;
@@ -31,6 +34,7 @@ import com.pm.common.entities.PmOrderProdcuts;
 import com.pm.common.entities.PmOrders;
 import com.pm.common.entities.PmProducts;
 import com.pm.common.exception.BussinessExection;
+import com.pm.common.utility.Utility;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -54,6 +58,9 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private AddressRepository addressRepository;
+	
+	@Autowired
+	private AmazonClientService amazonClientService;
 
 	private StorageService storageService;
 
@@ -133,15 +140,15 @@ public class ProductServiceImpl implements ProductService {
 	public Product getProduct(long productId) {
 		Optional<PmProducts> findById = productRepository.findById(productId);
 		ProductBuilder prod = Product.builder();
-		findById.ifPresent((product) -> {
+		findById.ifPresent(product -> 
 			prod.prductId(product.getItemId()).itemName(product.getItemName()).itemDesc(product.getItemDesc())
 					.grade(product.getGrade()).units(product.getUnits())
 					.categoryId(product.getPmCategories().getCategoryId())
 					.categoryName(product.getPmCategories().getCategoryName()).availability(product.getAvailability())
 					.price(product.getPrice()).qty(product.getQty()).image(product.getImagePath())
 					.location(product.getLocation()).userId(product.getPmUsers().getUserId())
-					.userName(product.getPmUsers().getEmail()).rating(product.getPmUsers().getRating());
-		});
+					.userName(product.getPmUsers().getEmail()).rating(product.getPmUsers().getRating())
+		);
 		return prod.build();
 	}
 
@@ -168,10 +175,15 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public void store(MultipartFile file, Long userId, Long itemId) {
-		String relPath = storageService.store(file, userId, itemId);
-		PmProducts prdct = productRepository.findById(itemId).orElseThrow(IllegalArgumentException::new);
-		prdct.setImagePath(relPath);
+	public void store(MultipartFile multipartFile, Long userId, Long itemId) {
+		//String relPath = storageService.store(file, userId, itemId);
+		File file = Utility.convertMultiPartToFile(multipartFile);
+	    String fileName = Utility.generateFileName(multipartFile);
+		amazonClientService.getS3Client().putObject(new PutObjectRequest("prodcuts",fileName, file)
+				.withCannedAcl(CannedAccessControlList.PublicRead));
+		String uploadedFileUrl = amazonClientService.getS3Client().getUrl("prodcuts",fileName).toString();
+		PmProducts prdct = productRepository.findById(itemId).orElseThrow(() -> new BussinessExection("Item not found"));
+		prdct.setImagePath(uploadedFileUrl);
 		productRepository.save(prdct);
 	}
 
