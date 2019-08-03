@@ -1,16 +1,21 @@
 package com.pm.bs.order.service;
 
+import java.util.List;
+
+import com.pm.bs.beans.OrderWrapper;
 import com.pm.common.entities.PmOrders;
 
 public interface OrderService {
 
 	PmOrders addOrder(PmOrders pmOrd);
 
-	void getOrders();
+	List<OrderWrapper> getOrders(Long userId);
+	
+	OrderWrapper getOrder(Long ordId);
 
 	PmOrders getOrderById(long ordId);
 
-	void updateOrder(PmOrders pmOrd);
+	void updateOrder(long pmOrd);
 
 	void deleteOrder(Long orderId);
 }

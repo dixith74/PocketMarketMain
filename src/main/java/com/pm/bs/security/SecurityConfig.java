@@ -32,7 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     	web
 		.ignoring()
 		.antMatchers(HttpMethod.OPTIONS)
-		.antMatchers("/v2/api-docs","/upload/**", "/downloadFile/**", "/categories/**",
+		.antMatchers("/v2/api-docs","/upload/**", "/products/**","/orders/**",
+					"/downloadFile/**", "/categories/**",
                     "/configuration/ui",
                     "/swagger-resources/**",
                     "/configuration/security/**",
@@ -47,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         		//.requestMatcher(EndpointRequest.toAnyEndpoint())
         		//.authorizeRequests().anyRequest().permitAll()
         		//.and()
-                .csrf().disable()
+               .csrf().disable()
                 .logout().disable()
                 .formLogin().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -60,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .addFilterAfter(new JwtTokenAuthenticationFilter(config),
                             UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests().anyRequest().authenticated();
+                
     }
 }
 

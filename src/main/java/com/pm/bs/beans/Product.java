@@ -31,6 +31,7 @@ public class Product {
 	private String image;
 	private Integer qty;
 	private Double rating;
+	private long orderId;
 	@JsonIgnore
 	private Date createdTime;
 	@JsonIgnore
