@@ -1,0 +1,1 @@
+ALTER TABLE pm_orders ADD CONSTRAINT constraint_fk_orderby FOREIGN KEY (order_by) REFERENCES pm_users(user_id)

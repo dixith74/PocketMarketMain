@@ -203,12 +203,12 @@ paths:
       produces:
         - '*/*'
       parameters:
-        - name: itemId
-          in: path
-          description: itemId
+        - in: body
+          name: order
+          description: order
           required: true
-          type: integer
-          format: int64
+          schema:
+            $ref: '#/definitions/OrderRequest'
       responses:
         '200':
           description: OK
@@ -545,6 +545,31 @@ definitions:
       user_id:
         type: integer
         format: int64
+  OrderRequest:
+    type: object
+    properties:
+      coupon:
+        type: boolean
+      delivery_address:
+        type: string
+      delivery_fee:
+        type: number
+        format: double
+      discount:
+        type: number
+        format: double
+      item_id:
+        type: integer
+        format: int64
+      qty:
+        type: integer
+        format: int32
+      tax:
+        type: number
+        format: double
+      total_amt:
+        type: number
+        format: double
   InputStream:
     type: object
   Resource:

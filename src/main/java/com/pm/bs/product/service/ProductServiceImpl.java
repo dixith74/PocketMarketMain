@@ -85,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
 		pmPrd.setQty(product.getQty());
 		pmPrd.setLocation(product.getLocation());
 		pmPrd.setPrice(product.getPrice());
-		pmPrd.setPmUsers(userRepository.findById(product.getUserId()).orElseThrow(IllegalSelectorException::new));
+		pmPrd.setPmUsers(userRepository.findById(product.getUserId()).orElseThrow(BussinessExection::new));
 		pmPrd.setImagePath(product.getImage());
 		pmPrd = productRepository.save(pmPrd);
 		LOGGER.info("Product info after persist {}", pmPrd);
@@ -154,7 +154,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public void updateProduct(Product product) {
-		PmProducts pmPrd = productRepository.findById(product.getPrductId()).orElseThrow(RuntimeException::new);
+		PmProducts pmPrd = productRepository.findById(product.getPrductId()).orElseThrow(BussinessExection::new);
 		pmPrd.setItemName(product.getItemName());
 		pmPrd.setPmCategories(null);
 		pmPrd.setCreatedTime(new Date());

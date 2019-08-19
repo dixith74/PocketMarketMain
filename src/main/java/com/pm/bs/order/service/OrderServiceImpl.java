@@ -7,8 +7,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pm.bs.beans.OrderRequest;
 import com.pm.bs.beans.OrderWrapper;
+import com.pm.bs.product.repo.OrderProductsRepository;
 import com.pm.bs.product.repo.OrderRepository;
+import com.pm.common.entities.PmOrderProdcuts;
 import com.pm.common.entities.PmOrders;
 
 @Service
@@ -16,6 +19,9 @@ public class OrderServiceImpl implements OrderService {
 
 	@Autowired
 	private OrderRepository orderRepository;
+	
+	@Autowired
+	private OrderProductsRepository orderProductsRepository;
 
 	@Override
 	public PmOrders addOrder(PmOrders pmOrd) {
@@ -38,12 +44,19 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public void updateOrder(long prodId) {
-		PmOrders ord = orderRepository.getOrderByProductId(prodId);
-		ord.setOrderStatus("PLACED");
-		ord.setOrderCmpltdByCustmrId(2L);
-		ord.setUpdatedTime(new Date());
-		orderRepository.save(ord);
+	public void updateOrder(OrderRequest order) {
+		PmOrderProdcuts ord = orderRepository.getOrderByProductId(order.getItemId());
+		ord.setQuantity(order.getQty());
+		ord.setPrice(order.getTotalAmt());
+		ord.setTax(order.getTax());
+		ord.setDiscount(order.getDiscount());
+		ord.setCoupon(order.isCoupon());
+		ord.setDeliveryFee(order.getDeliveryFee());
+		ord.setDeliveryAddress(order.getDeliveryAddress());
+		ord.getPmOrders().setOrderStatus("Order is placed");
+		ord.getPmOrders().setOrderCmpltdByCustmrId(2L);
+		ord.getPmOrders().setUpdatedTime(new Date());
+		orderProductsRepository.save(ord);
 	}
 
 	@Override

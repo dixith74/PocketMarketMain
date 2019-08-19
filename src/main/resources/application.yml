@@ -1,12 +1,6 @@
 spring:
   application:
     name: pocket-market-main
-  profiles:
-    active:
-    - prod
----
-spring:
-  profiles: prod 
   datasource:
     url: jdbc:postgresql://localhost:5432/pocket_market
     username: postgres
@@ -21,6 +15,15 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQL9Dialect
         jdbc:
           lob.non_contextual_creation: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    table: schema_history_pm_main
+    baseline-on-migrate: true
+    baseline-version: 0.9
+    placeholder-replacement: true
+    placeholders:
+      schemaName: public
   resources:
     static-locations:
     - file:///D://pm
@@ -50,4 +53,11 @@ cloud:
     region:
       static: eu-west-1
     stack:
-      auto: false
+      auto: false  
+---
+spring:
+  profiles: prod
+  datasource:
+    url: jdbc:postgresql://pm-db:5432/pocket_market
+    username: postgres
+    password: 1234
