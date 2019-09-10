@@ -22,6 +22,7 @@ public class OrderWrapper {
 		private Integer qty;
 		private long orderId;
 		private String categoryName;
-		private long userId;
+		private Long userId;
 		private String orderStatus;
+		private String message;
 }

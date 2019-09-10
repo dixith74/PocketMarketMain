@@ -1,61 +1,55 @@
 package com.pm.bs.product.service;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.pm.bs.aws.AmazonClientService;
 import com.pm.bs.product.controller.StorageException;
+import com.pm.common.utility.Utility;
 
 @Service
 public class FileStorageServiceImpl implements StorageService {
 
 	private final Path rootLocation;
+	private AmazonClientService amazonClientService;
+	
+	private static final String APP_NAME = "pocket-market";
 
-	@Autowired
-	public FileStorageServiceImpl(StorageProperties properties) {
+	public FileStorageServiceImpl(StorageProperties properties, AmazonClientService amazonClientService) {
 		this.rootLocation = Paths.get(properties.getUploadDir()).toAbsolutePath().normalize();
+		this.amazonClientService = amazonClientService;
 	}
 
 	@Override
-	public String store(MultipartFile file, Long userId, Long itemId) {
-		String filename = StringUtils.cleanPath(file.getOriginalFilename());
-		String relImagePath = "\\products\\"+userId+"\\"+filename;
-		try {
-			if (file.isEmpty()) {
-				throw new StorageException("Failed to store empty file " + filename);
-			}
-			if (filename.contains("..")) {
-				// This is a security check
-				throw new StorageException(
-						"Cannot store file with relative path outside current directory " + filename);
-			}
-			try (InputStream inputStream = file.getInputStream()) {
-				Path targetPath = Paths.get(this.rootLocation +"\\products\\"+ userId);
-				if(!targetPath.toFile().exists()){
-			        System.out.println("Target file \"" + targetPath.toAbsolutePath() + "\" will be created.");
-			        Files.createDirectories(targetPath);
-			    }
-				System.out.println(targetPath.toString());
-				Files.copy(inputStream, targetPath.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
-				System.out.println(targetPath.toAbsolutePath());
-			}
-		} catch (IOException e) {
-			throw new StorageException("Failed to store file " + filename, e);
-		}
-		return relImagePath;
+	public String store(MultipartFile multipartFile, Long genId, String type) {
+		File file = Utility.convertMultiPartToFile(multipartFile);
+	    String fileName = Utility.generateFileName(multipartFile);
+	    if (type.equalsIgnoreCase("products")) {
+	    	fileName = "assets/products/"+genId + "/" + fileName;
+	    } else {
+	    	fileName = "assets/users/"+genId + "/" + fileName;
+	    }
+	    AmazonS3 amazonS3 = amazonClientService.getS3Client();
+	    if (amazonS3.doesBucketExistV2(APP_NAME)) {
+	    	amazonS3.putObject(new PutObjectRequest(APP_NAME,fileName, file)
+	    			.withCannedAcl(CannedAccessControlList.PublicRead));
+	    	return amazonS3.getUrl(APP_NAME,fileName).toString();
+	    }
+		return fileName;
 	}
 
 	@Override

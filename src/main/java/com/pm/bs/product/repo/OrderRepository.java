@@ -16,12 +16,17 @@ public interface OrderRepository extends CrudRepository<PmOrders, Long> {
 	PmOrderProdcuts getOrderByProductId(@Param("prodId") long prodId);
 	
 	@Query("select new com.pm.bs.beans.OrderWrapper(p.itemId, p.itemName, p.itemDesc, p.units, p.grade, p.price, p.location, p.imagePath, p.qty, "
-			+ "ord.orderId, p.pmCategories.categoryName, ord.orderCmpltdByCustmrId, ord.orderStatus) from PmOrderProdcuts po inner join po.pmProducts p inner join po.pmOrders ord "
+			+ "ord.orderId, p.pmCategories.categoryName, ord.orderCmpltdByCustmrId, ord.orderStatus, ord.message) from PmOrderProdcuts po inner join po.pmProducts p inner join po.pmOrders ord "
 			+ "where ord.orderCmpltdByCustmrId =:userId")
 	List<OrderWrapper> findByOrderCmpltdByCustmrId(@Param("userId") Long userId);
+	
+	@Query("select new com.pm.bs.beans.OrderWrapper(p.itemId, p.itemName, p.itemDesc, p.units, p.grade, p.price, p.location, p.imagePath, p.qty, "
+			+ "ord.orderId, p.pmCategories.categoryName, ord.orderCmpltdByCustmrId, ord.orderStatus, ord.message) from PmOrderProdcuts po inner join po.pmProducts p inner join po.pmOrders ord "
+			+ "where ord.placedByCustmrId =:userId")
+	List<OrderWrapper> findByOrderPlacedByCustmrId(@Param("userId") Long userId);
 
 	@Query("select new com.pm.bs.beans.OrderWrapper(p.itemId, p.itemName, p.itemDesc, p.units, p.grade, p.price, p.location, p.imagePath, p.qty, "
-			+ "ord.orderId, p.pmCategories.categoryName, ord.orderCmpltdByCustmrId, ord.orderStatus) from PmOrderProdcuts po inner join po.pmProducts p inner join po.pmOrders ord "
+			+ "ord.orderId, p.pmCategories.categoryName, ord.orderCmpltdByCustmrId, ord.orderStatus, ord.message) from PmOrderProdcuts po inner join po.pmProducts p inner join po.pmOrders ord "
 			+ "where ord.orderId =:orderId")
 	OrderWrapper getOrderByOrderId(@Param("orderId") Long orderId);
 }

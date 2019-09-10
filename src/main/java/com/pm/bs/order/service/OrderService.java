@@ -10,13 +10,15 @@ public interface OrderService {
 
 	PmOrders addOrder(PmOrders pmOrd);
 
-	List<OrderWrapper> getOrders(Long userId);
+	List<OrderWrapper> getOrders(Long userId, String type);
 	
 	OrderWrapper getOrder(Long ordId);
 
 	PmOrders getOrderById(long ordId);
 
-	void updateOrder(OrderRequest order);
+	void purchaseOrder(OrderRequest order);
 
 	void deleteOrder(Long orderId);
+
+	String updateOrder(Long orderId, String message, String status);
 }

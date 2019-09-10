@@ -13,9 +13,10 @@ public interface ProductRepository extends CrudRepository<PmProducts, Long> {
 	@Override
     List<PmProducts> findAll();
 	
-	@Query("select p from PmOrderProdcuts po inner join po.pmProducts p inner join po.pmOrders ord where ord.orderStatus !='CLOSED'")
-    List<PmProducts> getProductsOfOpenState();
+	@Query("select p from PmOrderProdcuts po inner join po.pmProducts p inner join po.pmOrders ord where ord.orderStatus ='OPEN' and ord.placedByCustmrId !=?1")
+    List<PmProducts> getProductsOfOpenState(Long userId);
 	
-	@Query("select p from PmOrderProdcuts po inner join po.pmProducts p inner join po.pmOrders ord where ord.orderStatus !='CLOSED' and p.location =:location")
-    List<PmProducts> getProductsOfOpenState(@Param("location") final String location);
+	@Query("select p from PmOrderProdcuts po inner join po.pmProducts p inner join po.pmOrders ord where ord.orderStatus ='OPEN' and p.location =:location"
+			+ " and ord.placedByCustmrId !=:userId")
+    List<PmProducts> getProductsOfOpenState(@Param("location") final String location, @Param("userId") Long userId);
 }

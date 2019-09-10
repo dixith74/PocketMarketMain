@@ -33,18 +33,13 @@ spring:
       max-request-size: 1MB
 server:
   port: 8083
+sms:
+  api:
+    key: NivixdwmYkU-WOVs38Wp3fJ5HeQ8VS7pIPhUHeSZ8L
 management:
-  endpoint:
-    beans:
-      enabled: true
-    metrics:
-      enabled: true
+  endpoints:
     web:
-      exposure:
-        include: "*"
-logging:
-  level:
-    com.pm : INFO
+      base-path: /
 storage:
   upload-dir: 'D:\pm'
   

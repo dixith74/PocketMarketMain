@@ -14,7 +14,7 @@ public interface ProductService {
 
 	List<Product> getProducts();
 	
-	List<Product> getOpenOrders(String location);
+	List<Product> getOpenOrders(String location, Long userId);
 
 	Product getProduct(long productId);
 
@@ -22,7 +22,7 @@ public interface ProductService {
 
 	void deleteProduct(long product);
 
-	void store(MultipartFile file, Long userId, Long itemId);
+	void store(MultipartFile file, Long genId);
 
 	void addAddress(Address adress);
 	

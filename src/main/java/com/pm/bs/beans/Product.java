@@ -16,7 +16,7 @@ import lombok.ToString;
 @ToString
 public class Product {
 
-	private long prductId;
+	private long productId;
 	private long categoryId;
 	private String categoryName;
 	private String userName;

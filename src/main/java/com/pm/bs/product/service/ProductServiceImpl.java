@@ -1,6 +1,5 @@
 package com.pm.bs.product.service;
 
-import java.io.File;
 import java.nio.channels.IllegalSelectorException;
 import java.util.Date;
 import java.util.List;
@@ -16,9 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.pm.bs.aws.AmazonClientService;
 import com.pm.bs.beans.Product;
 import com.pm.bs.beans.Product.ProductBuilder;
 import com.pm.bs.order.service.OrderService;
@@ -34,7 +30,6 @@ import com.pm.common.entities.PmOrderProdcuts;
 import com.pm.common.entities.PmOrders;
 import com.pm.common.entities.PmProducts;
 import com.pm.common.exception.BussinessExection;
-import com.pm.common.utility.Utility;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -59,9 +54,6 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired
 	private AddressRepository addressRepository;
 	
-	@Autowired
-	private AmazonClientService amazonClientService;
-
 	private StorageService storageService;
 
 	public ProductServiceImpl(StorageService storageService) {
@@ -105,6 +97,7 @@ public class ProductServiceImpl implements ProductService {
 		pmOrd.setTotalPrice(pmPrd.getPrice());
 		pmOrd.setCreatedTime(new Date());
 		pmOrd.setUpdatedTime(new Date());
+		pmOrd.setMessage("No buyer is available");
 		pmOrd = orderService.addOrder(pmOrd);
 		LOGGER.info("Order info after persist {}", pmOrd);
 
@@ -120,7 +113,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public List<Product> getProducts() {
-		return getOpenOrders(null);
+		return getOpenOrders(null, 3L);
 		/*
 		List<PmProducts> products = productRepository.getProductsOfOpenState();
 		return products.stream().map((product) -> {
@@ -141,7 +134,7 @@ public class ProductServiceImpl implements ProductService {
 		Optional<PmProducts> findById = productRepository.findById(productId);
 		ProductBuilder prod = Product.builder();
 		findById.ifPresent(product -> 
-			prod.prductId(product.getItemId()).itemName(product.getItemName()).itemDesc(product.getItemDesc())
+			prod.productId(product.getItemId()).itemName(product.getItemName()).itemDesc(product.getItemDesc())
 					.grade(product.getGrade()).units(product.getUnits())
 					.categoryId(product.getPmCategories().getCategoryId())
 					.categoryName(product.getPmCategories().getCategoryName()).availability(product.getAvailability())
@@ -154,7 +147,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public void updateProduct(Product product) {
-		PmProducts pmPrd = productRepository.findById(product.getPrductId()).orElseThrow(BussinessExection::new);
+		PmProducts pmPrd = productRepository.findById(product.getProductId()).orElseThrow(BussinessExection::new);
 		pmPrd.setItemName(product.getItemName());
 		pmPrd.setPmCategories(null);
 		pmPrd.setCreatedTime(new Date());
@@ -175,16 +168,11 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public void store(MultipartFile multipartFile, Long userId, Long itemId) {
-		//String relPath = storageService.store(file, userId, itemId);
-		File file = Utility.convertMultiPartToFile(multipartFile);
-	    String fileName = Utility.generateFileName(multipartFile);
-		amazonClientService.getS3Client().putObject(new PutObjectRequest("prodcuts",fileName, file)
-				.withCannedAcl(CannedAccessControlList.PublicRead));
-		String uploadedFileUrl = amazonClientService.getS3Client().getUrl("prodcuts",fileName).toString();
-		PmProducts prdct = productRepository.findById(itemId).orElseThrow(() -> new BussinessExection("Item not found"));
-		prdct.setImagePath(uploadedFileUrl);
-		productRepository.save(prdct);
+	public void store(MultipartFile multipartFile, Long itemId) {
+		PmProducts prdct = productRepository.findById(itemId).orElseThrow(() -> new BussinessExection("Product not found"));
+		String uploadedFileUrl = storageService.store(multipartFile, itemId, "product");
+    	prdct.setImagePath(uploadedFileUrl);
+    	productRepository.save(prdct);
 	}
 
 	@Override
@@ -205,15 +193,15 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<Product> getOpenOrders(String location) {
+	public List<Product> getOpenOrders(String location, Long userId) {
 		List<PmProducts> products = null;
 		if (location !=null) {
-			products = productRepository.getProductsOfOpenState(location);
+			products = productRepository.getProductsOfOpenState(location, userId);
 		} else {
-			products = productRepository.getProductsOfOpenState();
+			products = productRepository.getProductsOfOpenState(userId);
 		}
 		return products.stream().map((product) -> {
-			ProductBuilder prod = Product.builder().prductId(product.getItemId()).itemName(product.getItemName())
+			ProductBuilder prod = Product.builder().productId(product.getItemId()).itemName(product.getItemName())
 					.itemDesc(product.getItemDesc()).grade(product.getGrade()).units(product.getUnits())
 					.categoryId(product.getPmCategories().getCategoryId())
 					.categoryName(product.getPmCategories().getCategoryName()).availability(product.getAvailability())
