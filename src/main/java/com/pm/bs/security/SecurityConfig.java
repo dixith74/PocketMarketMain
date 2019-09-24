@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,6 +17,7 @@ import com.pm.common.security.JwtAuthenticationConfig;
 import com.pm.common.security.JwtTokenAuthenticationFilter;
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -33,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.ignoring()
 		.antMatchers(HttpMethod.OPTIONS)
 		.antMatchers("/v2/api-docs","/upload/**", "/products/**","/orders/**",
-					"/downloadFile/**", "/categories/**",
+					"/downloadFile/**", "/categories/**","/track/**","/sendSms/**",
                     "/configuration/ui",
                     "/swagger-resources/**",
                     "/configuration/security/**",

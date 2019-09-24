@@ -5,27 +5,29 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.pm.bs.beans.Product;
+import com.pm.bs.beans.ProductRequest;
+import com.pm.bs.beans.ProductMaster;
+import com.pm.bs.beans.ProductResponse;
 import com.pm.common.beans.Address;
 
 public interface ProductService {
 
-	Long addProduct(Product product);
+	Long addProduct(ProductRequest product);
 
-	List<Product> getProducts();
+	List<ProductResponse> getProducts();
 	
-	List<Product> getOpenOrders(String location, Long userId);
+	List<ProductResponse> getOpenOrders(String location, Long userId);
 
-	Product getProduct(long productId);
+	ProductResponse getProduct(long productId);
 
-	void updateProduct(Product product);
+	void updateProduct(ProductRequest product);
 
 	void deleteProduct(long product);
 
 	void store(MultipartFile file, Long genId);
-
-	void addAddress(Address adress);
 	
 	Map<Long, String> getCategories();
+
+	List<ProductMaster> getPredefinedProducts();
 
 }

@@ -38,7 +38,7 @@ public class OrderTrackerServiceImpl implements OrderTrackerService {
 		String trackId = pmOrder.getTrackId();
 		if (StringUtils.isNotEmpty(trackId)) {
 			// create track id and set
-			trackId = "PM-"+orderTrackerRepository.getNextSeriesId();
+			trackId = "PM-" + orderTrackerRepository.getNextSeriesId();
 			pmOrder.setTrackId(trackId);
 		}
 		pmOrder.setOrderStatus(track.get("status"));

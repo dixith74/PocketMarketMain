@@ -35,7 +35,7 @@ server:
   port: 8083
 sms:
   api:
-    key: NivixdwmYkU-WOVs38Wp3fJ5HeQ8VS7pIPhUHeSZ8L
+    key: NivixdwmYkU-WOVs38Wp3fJ5HeQ8VS7pIPhUHeSZ8LT
 management:
   endpoints:
     web:

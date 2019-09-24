@@ -37,11 +37,7 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public List<OrderWrapper> getOrders(Long userId, String type) {
 		if (userId !=null) {
-			if ("BUYER".equalsIgnoreCase(type)) {
-				return orderRepository.findByOrderCmpltdByCustmrId(userId);
-			} else {
-				return orderRepository.findByOrderPlacedByCustmrId(userId);
-			}
+			return orderRepository.findOrdersShelf(userId);
 		}
 		return orderRepository.findByOrderCmpltdByCustmrId(userId);
 	}

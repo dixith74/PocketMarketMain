@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,10 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.pm.bs.beans.Product;
+import com.pm.bs.beans.ProductMaster;
+import com.pm.bs.beans.ProductRequest;
+import com.pm.bs.beans.ProductResponse;
 import com.pm.bs.product.service.ProductService;
 import com.pm.bs.product.service.StorageService;
-import com.pm.common.beans.Address;
 
 @RestController
 public class ProductsController {
@@ -41,51 +41,52 @@ public class ProductsController {
 	@Autowired
 	private StorageService storageService;
 
-	@Autowired
-	@Qualifier("producttypes")
-	private Map<String, String> prodMap;
-
 	@GetMapping("/categories")
 	@ResponseStatus(code = HttpStatus.OK)
-	public ResponseEntity<Map<Long, String>> getCatogiries() {
-		return ResponseEntity.ok().body(productService.getCategories());
+	public Map<Long, String> getCatogiries() {
+		return productService.getCategories();
 	}
 
-	@GetMapping("/products/names")
+	@GetMapping("/products/master")
 	@ResponseStatus(code = HttpStatus.OK)
-	public ResponseEntity<Map<String, String>> getProdcutTypes() {
-		return ResponseEntity.ok().body(prodMap);
+	public List<ProductMaster> getProdcutTypes() {
+		return productService.getPredefinedProducts();
 	}
 
 	@PostMapping("/products")
-	public ResponseEntity<?> saveProduct(@RequestBody() Product product) {
+	public ResponseEntity<?> saveProduct(@RequestBody() ProductRequest product) {
 		Long itemId = productService.addProduct(product);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(itemId).toUri();
 		return ResponseEntity.created(location).build();
 	}
 
 	@GetMapping("/products/{prodId}")
-	public Product getProduct(@PathVariable("prodId") long prodId) {
+	@ResponseStatus(code = HttpStatus.OK)
+	public ProductResponse getProduct(@PathVariable("prodId") long prodId) {
 		return productService.getProduct(prodId);
 	}
 
 	@GetMapping("/products")
-	public List<Product> getProducts(@RequestParam(value = "location", required = false) String location,
+	@ResponseStatus(code = HttpStatus.OK)
+	public List<ProductResponse> getProducts(@RequestParam(value = "location", required = false) String location,
 			@RequestParam(value = "user_id", required = false) Long userId) {
 		return productService.getOpenOrders(location, userId);
 	}
 
 	@DeleteMapping("/products/{prodId}")
+	@ResponseStatus(code = HttpStatus.OK)
 	public void delete(@PathVariable("prodId") long prodId) {
 		productService.deleteProduct(prodId);
 	}
 
 	@PutMapping("/products/{prodId}")
-	public void update(@PathVariable("prodId") long prodId, @RequestBody() Product product) {
+	@ResponseStatus(code = HttpStatus.OK)
+	public void update(@PathVariable("prodId") long prodId, @RequestBody() ProductRequest product) {
 		productService.updateProduct(product);
 	}
 
 	@PostMapping("/products/{productId}/upload")
+	@ResponseStatus(code = HttpStatus.OK)
 	public ResponseEntity<?> handleFileUpload(@RequestParam("file") MultipartFile file,
 			@PathVariable("productId") Long productId) {
 		productService.store(file, productId);
@@ -93,11 +94,6 @@ public class ProductsController {
 		// ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand("122").toUri();
 		// ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentContextPath().path("/downloadFile/").path("123").build().toUri());
 		return ResponseEntity.ok().build();
-	}
-
-	@PostMapping("address")
-	public void addDeliveryAddress(@RequestBody() Address adress) {
-		productService.addAddress(adress);
 	}
 
 	@GetMapping("/downloadFile/{fileName:.+}")
@@ -128,4 +124,11 @@ public class ProductsController {
 	public ResponseEntity<?> handleStorageFileNotFound(StorageException exc) {
 		return ResponseEntity.notFound().build();
 	}
+	/*
+	@PostMapping("sendSms")
+	public ResponseEntity<String> sendRequest(@RequestParam("apiKey") String apiKey,@RequestParam("message") String message,
+			@RequestParam("numbers") String numbers,@RequestParam("sender") String sender) {
+		System.out.println(apiKey+" "+message+" "+numbers+" "+sender);
+		return ResponseEntity.ok("{status:success}");
+	}*/
 }

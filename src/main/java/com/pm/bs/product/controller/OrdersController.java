@@ -42,9 +42,8 @@ public class OrdersController {
 	}
 	
 	@GetMapping("/orders")
-	public ResponseEntity<List<OrderWrapper>> getOrders(@RequestParam(value = "userId", required = false) Long userId,
-			@RequestParam(value = "user_type", required = false) String userType) {
-		List<OrderWrapper> orders = orderService.getOrders(userId, userType);
+	public ResponseEntity<List<OrderWrapper>> getOrders(@RequestParam(value = "userId", required = false) Long userId) {
+		List<OrderWrapper> orders = orderService.getOrders(userId, null);
 		return ResponseEntity.ok(orders);
 	}
 	

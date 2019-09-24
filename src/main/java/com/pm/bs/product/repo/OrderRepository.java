@@ -17,6 +17,11 @@ public interface OrderRepository extends CrudRepository<PmOrders, Long> {
 	
 	@Query("select new com.pm.bs.beans.OrderWrapper(p.itemId, p.itemName, p.itemDesc, p.units, p.grade, p.price, p.location, p.imagePath, p.qty, "
 			+ "ord.orderId, p.pmCategories.categoryName, ord.orderCmpltdByCustmrId, ord.orderStatus, ord.message) from PmOrderProdcuts po inner join po.pmProducts p inner join po.pmOrders ord "
+			+ "where (ord.orderCmpltdByCustmrId =:userId OR ord.placedByCustmrId =:userId)")
+	List<OrderWrapper> findOrdersShelf(@Param("userId") Long userId);
+	
+	@Query("select new com.pm.bs.beans.OrderWrapper(p.itemId, p.itemName, p.itemDesc, p.units, p.grade, p.price, p.location, p.imagePath, p.qty, "
+			+ "ord.orderId, p.pmCategories.categoryName, ord.orderCmpltdByCustmrId, ord.orderStatus, ord.message) from PmOrderProdcuts po inner join po.pmProducts p inner join po.pmOrders ord "
 			+ "where ord.orderCmpltdByCustmrId =:userId")
 	List<OrderWrapper> findByOrderCmpltdByCustmrId(@Param("userId") Long userId);
 	

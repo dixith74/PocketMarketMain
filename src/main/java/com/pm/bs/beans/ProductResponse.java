@@ -14,7 +14,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Product {
+public class ProductResponse {
 
 	private long productId;
 	private long categoryId;
