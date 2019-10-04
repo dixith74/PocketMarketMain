@@ -1,13 +1,8 @@
 package com.pm.bs.swagger.config;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.google.common.base.Predicate;
 
 import springfox.documentation.RequestHandler;
@@ -44,17 +39,5 @@ public class SwaggerConfig {
                "Apache License Version 2.0",
                 "https://www.apache.org/licenses/LICENSE-2.0");
         return apiInfo;
-    }
-
-    @Bean
-    public Jackson2ObjectMapperBuilder jacksonBuilder() {
-        Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-        builder.propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-        return builder;
-    }
-    
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder bulder) {
-    	return bulder.basicAuthentication("pm", "pm123").build();
     }
 }

@@ -55,10 +55,10 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired
 	private OrderProductsRepository orderProductsRepository;
 	
-	private StorageService storageService;
+	private UploadService uploadService;
 
-	public ProductServiceImpl(StorageService storageService) {
-		this.storageService = storageService;
+	public ProductServiceImpl(UploadService uploadService) {
+		this.uploadService = uploadService;
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
 		pmPrd.setUnits(product.getUnits());
 		pmPrd.setQty(product.getQty());
 		pmPrd.setPrice(product.getPrice());
-		pmPrd.setPmUsers(userRepository.findById(product.getUserId()).orElseThrow(BussinessExection::new));
+		pmPrd.setPmUsers(userRepository.findById(product.getUserId()).orElseThrow(() -> new BussinessExection("User not found", 404)));
 		pmPrd.setCreatedTime(new Date());
 		pmPrd.setUpdatedTime(new Date());
 		pmPrd = productRepository.save(pmPrd);
@@ -101,7 +101,7 @@ public class ProductServiceImpl implements ProductService {
 		pmOrd.setOrdTrckStts("NA");
 		pmOrd.setPaymentStatus("NA");
 		pmOrd.setPaymentType("NA");
-		pmOrd.setPlacedByCustmrId(pmPrd.getPmUsers().getUserId());
+		pmOrd.setPostedByCustmrId(pmPrd.getPmUsers().getUserId());
 		pmOrd.setPmUsers(pmPrd.getPmUsers());
 		pmOrd.setTotalPrice(pmPrd.getPrice());
 		pmOrd.setCreatedTime(new Date());
@@ -143,13 +143,13 @@ public class ProductServiceImpl implements ProductService {
 		Optional<PmProducts> findById = productRepository.findById(productId);
 		ProductResponseBuilder prod = ProductResponse.builder();
 		findById.ifPresent(product -> 
-			prod.productId(product.getItemId()).itemName(product.getItemName()).itemDesc(product.getItemDesc())
-					.grade(product.getGrade()).units(product.getUnits())
-					.categoryId(product.getPmCategories().getCategoryId())
-					.categoryName(product.getPmCategories().getCategoryName()).availability(product.getAvailability())
-					.price(product.getPrice()).qty(product.getQty()).image(product.getImagePath())
-					.location(product.getLocation()).userId(product.getPmUsers().getUserId())
-					.userName(product.getPmUsers().getEmail()).rating(product.getPmUsers().getRating())
+			prod.productId(product.getItemId()).itemName(product.getItemName())
+			.itemDesc(product.getItemDesc()).grade(product.getGrade()).units(product.getUnits())
+			.categoryId(product.getPmCategories().getCategoryId())
+			.categoryName(product.getPmCategories().getCategoryName()).availability(product.getAvailability())
+			.price(product.getPrice()).qty(product.getQty()).image(product.getImagePath() !=null ? product.getImagePath() :getImage())
+			.location(product.getLocation()).userId(product.getPmUsers().getUserId())
+			.userName(product.getPmUsers().getEmail()).rating(product.getPmUsers().getRating())
 		);
 		return prod.build();
 	}
@@ -181,7 +181,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public void store(MultipartFile multipartFile, Long itemId) {
 		PmProducts prdct = productRepository.findById(itemId).orElseThrow(() -> new BussinessExection("Product not found", 404));
-		String uploadedFileUrl = storageService.store(multipartFile, itemId, "products");
+		String uploadedFileUrl = uploadService.store(multipartFile, itemId, "products");
     	prdct.setImagePath(uploadedFileUrl);
     	productRepository.save(prdct);
 	}

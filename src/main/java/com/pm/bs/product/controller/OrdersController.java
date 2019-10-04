@@ -3,6 +3,7 @@ package com.pm.bs.product.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -52,14 +53,14 @@ public class OrdersController {
 		
 	}
 	
-	@PutMapping("/orders")
-	public ResponseEntity<Void> purchaseOrder(@RequestBody() OrderRequest order) {
+	@PutMapping("/orders/{orderId}/purchase")
+	public ResponseEntity<Void> purchaseOrder(@PathVariable("orderId") Long ordId, @RequestBody() @Valid OrderRequest order) {
 		orderService.purchaseOrder(order);
 		return ResponseEntity.ok().build();
 	}
 	
 	@PutMapping("/orders/{orderId}")
-	public ResponseEntity<String> updateOrder(@PathVariable("orderId") Long ordId, @RequestParam("status") String status,
+	public ResponseEntity<String> updateOrderStatus(@PathVariable("orderId") Long ordId, @RequestParam("status") String status,
 			@RequestParam("message") String message) {
 		String resp = orderService.updateOrder(ordId, message, status);
 		return ResponseEntity.ok(resp);

@@ -59,7 +59,9 @@ public class OrderServiceImpl implements OrderService {
 		ord.setDeliveryAddress(order.getDeliveryAddress());
 		ord.getPmOrders().setOrderStatus(order.getStatus()!=null ? order.getStatus(): "Order has been placed");
 		ord.getPmOrders().setMessage("Buyer is available");
-		ord.getPmOrders().setOrderCmpltdByCustmrId(order.getUserId());
+		ord.getPmOrders().setPlacedByCustmrId(order.getUserId());
+		ord.getPmOrders().setShippingId(order.getDeliveryAddrId());
+		ord.getPmOrders().setShippingId(order.getDeliveryAddrId());
 		ord.getPmOrders().setUpdatedTime(new Date());
 		orderProductsRepository.save(ord);
 		//makeTrackEntry(ord.getPmOrders().getOrderId());

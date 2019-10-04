@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.pm"})
 @EntityScan(basePackages = "com.pm.common.entities")
 @EnableTransactionManagement
 public class PocketMarketOrderflowApplication {

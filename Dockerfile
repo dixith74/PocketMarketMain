@@ -4,14 +4,13 @@ FROM openjdk:8-jdk-alpine
 RUN apk --no-cache add curl
 
 # Add Maintainer Info
-LABEL maintainer="callicoder@gmail.com"
+LABEL maintainer="tatarao.oleti@gmail.com"
 
 # Add a volume pointing to /tmp
 VOLUME /tmp
 
 # Make port 8080 available to the world outside this container
-EXPOSE 8080
-
+#EXPOSE 8080
 #ARG JAR_FILE= build/libs/pocket-market-main-0.0.1-SNAPSHOT.jar
 
 # Add the application's jar to the container

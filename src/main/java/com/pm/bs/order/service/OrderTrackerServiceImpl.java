@@ -42,7 +42,7 @@ public class OrderTrackerServiceImpl implements OrderTrackerService {
 			pmOrder.setTrackId(trackId);
 		}
 		pmOrder.setOrderStatus(track.get("status"));
-		pmOrder.setMessage(track.get("desc"));
+		//pmOrder.setMessage(track.get("desc"));
 		pmOrder.setUpdatedTime(new Date());
 		orderRepository.save(pmOrder);
 		

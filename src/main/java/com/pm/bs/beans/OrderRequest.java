@@ -1,5 +1,7 @@
 package com.pm.bs.beans;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
@@ -9,16 +11,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderRequest {
 	
-	private long itemId;
-	private double totalAmt;
-	private double tax;
-	private int qty;
-	private double discount;
-	private double deliveryFee;
-	boolean coupon = false;
+	@NotNull
+	private Long itemId;
+	
+	@NotNull
+	private Double totalAmt;
+	
+	@NotNull
+	private Integer qty;
+	
+	private Double tax;
+	private Double discount;
+	private Double deliveryFee;
+	private boolean coupon = false;
+	
+	@NotNull
+	private Long userId;
+	
+	@NotNull
+	private Long deliveryAddrId;
+	
 	@JsonIgnore
 	private String status;
+	
 	private String deliveryAddress;
-	private Long userId;
-
 }
